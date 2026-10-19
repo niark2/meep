@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>meep</title>
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48dGV4dCB5PSIuOWVtIiBmb250LXNpemU9IjkwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI1MCI+8J+mgDwvdGV4dD48L3N2Zz4=">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+
+<div id="gate" class="gate">
+  <div class="gate-inner">
+    <p class="gate-name">🦀</p>
+    <p class="gate-line">jason.</p>
+    <p class="gate-line">ma date de naissance.</p>
+    <p class="gate-line dim">si tu t'en souviens, tu passes.</p>
+    <p class="gate-line dim">réunis tous les objectifs, y'a un cadeau :p</p>
+    <div class="gate-row" id="gateRow">
+      <input id="gateInput" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="jj/mm/aaaa" maxlength="10" aria-label="date de naissance">
+      <button id="gateBtn" type="button">entrer</button>
+    </div>
+    <p id="gateMsg" class="gate-msg"></p>
+  </div>
+</div>
+
+<main class="app">
+
+  <header class="hud">
+    <div class="counter">
+      <span id="meeps" class="meeps">0</span>
+      <span class="unit">meeps</span>
+      <span id="cps" class="cps">+0 /s</span>
+    </div>
+
+    <div class="hud-actions">
+      <button id="codeBtn" class="hud-btn" aria-label="code">
+        <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><g fill="currentColor"><rect x="1" y="5" width="6" height="6"/><rect x="3" y="7" width="2" height="2" fill="#1a1124"/><rect x="7" y="7" width="7" height="2"/><rect x="10" y="9" width="2" height="2"/><rect x="13" y="9" width="1" height="3"/></g></svg>
+        <span id="codeCount">0/3</span>
+      </button>
+      <button id="giftBtn" class="hud-btn" aria-label="cadeau" title="cadeau"><span class="hud-emoji">🎁</span></button>
+      <button id="muteBtn" class="hud-btn is-muted" aria-label="Son">
+        <svg class="ico ico-sound" viewBox="0 0 16 16" aria-hidden="true"><g fill="currentColor"><rect x="1" y="6" width="3" height="4"/><rect x="4" y="4" width="1" height="8"/><rect x="5" y="3" width="1" height="10"/><rect x="6" y="2" width="2" height="12"/><rect x="10" y="6" width="1" height="4"/><rect x="12" y="4" width="1" height="8"/></g></svg>
+        <svg class="ico ico-muted" viewBox="0 0 16 16" aria-hidden="true"><g fill="currentColor"><rect x="1" y="6" width="3" height="4"/><rect x="4" y="4" width="1" height="8"/><rect x="5" y="3" width="1" height="10"/><rect x="6" y="2" width="2" height="12"/><rect x="10" y="6" width="2" height="2"/><rect x="13" y="9" width="2" height="2"/><rect x="12" y="6" width="2" height="2"/><rect x="10" y="9" width="2" height="2"/></g></svg>
+      </button>
+    </div>
+  </header>
+
+  <aside class="goals">
+    <h2>objectifs</h2>
+    <ul id="goalList" class="goal-list"></ul>
+  </aside>
+
+  <section class="stage" id="stage">
+    <div class="wall" aria-hidden="true"></div>
+    <div class="crabs" id="crabs" aria-hidden="true"></div>
+
+    <div class="pedestal">
+      <button id="crab" class="crab" aria-label="Cliquer">
+        <span class="crab-shadow" aria-hidden="true"></span>
+        <img id="crabSprite" class="crab-emoji" alt="" aria-hidden="true">
+      </button>
+    </div>
+
+    <button id="meepBtn" class="meep" aria-label="Meep">
+      <span class="meep-label">meep</span>
+      <span class="meep-cd" id="meepCd" aria-hidden="true"></span>
+    </button>
+
+    <p class="hint" id="hint">clique</p>
+  </section>
+
+  <aside class="shop">
+    <ul id="shopList" class="shop-list"></ul>
+  </aside>
+
+  <footer class="ticker" aria-hidden="true">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </footer>
+
+</main>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<div id="eventLayer" class="event-layer"></div>
+
+<div id="codeScreen" class="overlay hidden" role="dialog" aria-label="code">
+  <div class="sheet">
+    <h2>code</h2>
+    <p id="codeIntro">trois questions. trois récompenses.</p>
+    <ul id="codeList" class="code-list"></ul>
+    <button id="restartCodeBtn" class="sheet-close">recommencer</button>
+    <button class="sheet-close" data-close="codeScreen">fermer</button>
+  </div>
+</div>
+
+<div id="giftScreen" class="overlay hidden" role="dialog" aria-label="cadeau">
+  <div class="sheet">
+    <h2>cadeau</h2>
+    <p id="giftIntro">cinq conditions. après, c'est moi qui régale.</p>
+    <ul id="giftConds" class="gift-conds"></ul>
+
+    <button id="giftOpen" class="sheet-close" disabled>débloquer</button>
+
+    <div id="giftReveal" class="gift-reveal hidden">
+      <p class="gift-hint">c'est du base64. décode-le ici :</p>
+      <p class="gift-link"><a href="https://www.base64decode.org/" target="_blank" rel="noopener">base64decode.org</a></p>
+      <code id="giftB64" class="gift-b64"></code>
+      <div class="code-row">
+        <input id="giftInput" class="code-input" type="text" autocomplete="off" spellcheck="false" placeholder="mot de passe" aria-label="mot de passe">
+        <button id="giftOk" class="code-ok" type="button">ok</button>
+      </div>
+      <p id="giftMsg" class="gate-msg"></p>
+    </div>
+
+    <div id="giftPrize" class="gift-prize hidden"></div>
+
+    <button class="sheet-close" data-close="giftScreen">fermer</button>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
